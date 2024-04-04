@@ -1,0 +1,11 @@
+[package]
+name = "zad7"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "z7"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+

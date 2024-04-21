@@ -8,5 +8,7 @@ int main() {
     std::cout << a / b << std::endl;
     std::cout << a * c << std::endl;
     std::cout << a.getCharacteristic() << std::endl;
+//    GaloisField<1234577> d;
+//    std::cin >> d;
     return 0;
 }

@@ -27,10 +27,10 @@ public:
 
     [[nodiscard]] uint32_t getValue() const;
 
-    GaloisField<CHARACT>& operator+=(const GaloisField<CHARACT>& rhs);
-    GaloisField<CHARACT>& operator-=(const GaloisField<CHARACT>& rhs);
-    GaloisField<CHARACT>& operator*=(const GaloisField<CHARACT>& rhs);
-    GaloisField<CHARACT>& operator/=(const GaloisField<CHARACT>& rhs);
+    constexpr GaloisField<CHARACT>& operator+=(const GaloisField<CHARACT>& rhs);
+    constexpr GaloisField<CHARACT>& operator-=(const GaloisField<CHARACT>& rhs);
+    constexpr GaloisField<CHARACT>& operator*=(const GaloisField<CHARACT>& rhs);
+    constexpr GaloisField<CHARACT>& operator/=(const GaloisField<CHARACT>& rhs);
 
 
 private:
@@ -79,7 +79,7 @@ GaloisField<CHARACT>& GaloisField<CHARACT>::operator=(const GaloisField<CHARACT>
 }
 
 template<uint32_t CHARACT>
-GaloisField<CHARACT>::GaloisField(GaloisField<CHARACT>&& src) noexcept
+[[maybe_unused]] GaloisField<CHARACT>::GaloisField(GaloisField<CHARACT>&& src) noexcept
         : GaloisField() {
 //    std::cout << "DEBUG: move constructor called\n";
     moveFrom(src);
@@ -125,69 +125,69 @@ uint32_t GaloisField<CHARACT>::getValue() const {
 
 
 template<uint32_t CHARACT>
-GaloisField<CHARACT>& GaloisField<CHARACT>::operator+=(const GaloisField<CHARACT>& rhs) {
+constexpr GaloisField<CHARACT>& GaloisField<CHARACT>::operator+=(const GaloisField<CHARACT>& rhs) {
     uint64_t temp = this->mValue + rhs.mValue;
     this->mValue = static_cast<uint32_t>(temp % CHARACT);
     return *this;
 }
 
 template<uint32_t CHARACT>
-GaloisField<CHARACT> operator+(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
+constexpr GaloisField<CHARACT> operator+(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
     auto temp = GaloisField<CHARACT>(lhs);
     temp += rhs;
     return std::move(temp);
 }
 
 template<uint32_t CHARACT>
-GaloisField<CHARACT>& GaloisField<CHARACT>::operator-=(const GaloisField<CHARACT>& rhs) {
+constexpr GaloisField<CHARACT>& GaloisField<CHARACT>::operator-=(const GaloisField<CHARACT>& rhs) {
     uint64_t temp = this->mValue + negative(rhs.mValue);
     this->mValue = static_cast<uint32_t>(temp % CHARACT);
     return *this;
 }
 
 template<uint32_t CHARACT>
-GaloisField<CHARACT> operator-(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
+constexpr GaloisField<CHARACT> operator-(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
     auto temp = GaloisField<CHARACT>(lhs);
     temp -= rhs;
     return std::move(temp);
 }
 
 template<uint32_t CHARACT>
-GaloisField<CHARACT>& GaloisField<CHARACT>::operator*=(const GaloisField<CHARACT>& rhs) {
+constexpr GaloisField<CHARACT>& GaloisField<CHARACT>::operator*=(const GaloisField<CHARACT>& rhs) {
     uint64_t temp = this->mValue * rhs.mValue;
     this->mValue = static_cast<uint32_t>(temp % CHARACT);
     return *this;
 }
 
 template<uint32_t CHARACT>
-GaloisField<CHARACT> operator*(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
+constexpr GaloisField<CHARACT> operator*(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
     auto temp = GaloisField<CHARACT>(lhs);
     temp *= rhs;
     return std::move(temp);
 }
 
 template<uint32_t CHARACT>
-GaloisField<CHARACT>& GaloisField<CHARACT>::operator/=(const GaloisField<CHARACT>& rhs) {
+constexpr GaloisField<CHARACT>& GaloisField<CHARACT>::operator/=(const GaloisField<CHARACT>& rhs) {
     auto rhsInv = rhs.inverse();
     *this *= rhsInv;
     return *this;
 }
 
 template<uint32_t CHARACT>
-GaloisField<CHARACT> operator/(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
+constexpr GaloisField<CHARACT> operator/(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
     auto temp = GaloisField<CHARACT>(lhs);
     temp /= rhs;
     return std::move(temp);
 }
 
 template<uint32_t CHARACT>
-std::ostream& operator<<(std::ostream& ostr, const GaloisField<CHARACT>& gf) {
+constexpr std::ostream& operator<<(std::ostream& ostr, const GaloisField<CHARACT>& gf) {
     ostr << gf.getValue();
     return ostr;
 }
 
 template<uint32_t CHARACT>
-std::istream& operator>>(std::istream& istr, GaloisField<CHARACT>& gf) {
+constexpr std::istream& operator>>(std::istream& istr, GaloisField<CHARACT>& gf) {
     uint32_t value;
     istr >> value;
     gf = GaloisField<CHARACT>(value);
@@ -195,34 +195,10 @@ std::istream& operator>>(std::istream& istr, GaloisField<CHARACT>& gf) {
 }
 
 template<uint32_t CHARACT>
-bool operator==(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
-    return lhs.getValue() == rhs.getValue();
+constexpr std::weak_ordering operator<=>(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
+    return lhs.getValue() <=> rhs.getValue();
 }
 
-template<uint32_t CHARACT>
-bool operator!=(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
-    return !(lhs == rhs);
-}
-
-template<uint32_t CHARACT>
-bool operator<(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
-    return lhs.getValue() < rhs.getValue();
-}
-
-template<uint32_t CHARACT>
-bool operator>(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
-    return lhs.getValue() > rhs.getValue();
-}
-
-template<uint32_t CHARACT>
-bool operator<=(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
-    return !(lhs > rhs);
-}
-
-template<uint32_t CHARACT>
-bool operator>=(const GaloisField<CHARACT>& lhs, const GaloisField<CHARACT>& rhs) {
-    return !(lhs < rhs);
-}
 template<uint32_t CHARACT>
 GaloisField<CHARACT> GaloisField<CHARACT>::inverse() const {
     if (NumberTools::gcd(this->mValue, CHARACT).value_or(0) != 1) {

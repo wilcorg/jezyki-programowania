@@ -1,0 +1,8 @@
+project Dining_Philosophers is
+   for Main use ("dining_philosophers.adb");
+   for Object_Dir use ".objs";
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g", "-O3");
+   end Compiler;
+end Dining_Philosophers;
